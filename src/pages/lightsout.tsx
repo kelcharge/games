@@ -6,6 +6,7 @@ const LEVELS = [[10, 12, 14]];
 
 export default function LightsOut() {
     // Setup
+    const [highscores, setHighScores] = useState([]);
     const [hasWon, setHasWon] = useState(false);
     const [size, setSize] = useState(25);
     const [lights, setLights] = useState(Array(size).fill(false));
@@ -13,6 +14,7 @@ export default function LightsOut() {
     const [moveCount, setMoveCount] = useState(0);
 
     useEffect(() => {
+        getHighScores();
         resetLevel(0);
         setIsLoaded(true);
     }, []);
@@ -76,34 +78,71 @@ export default function LightsOut() {
         );
     }
 
+    async function getHighScores() {
+        // Fetch the highscores from our backend
+        const highscores = await fetch("/api/get-highscore")
+            .then((response) => response.json())
+            .then((data) => data);
+
+        setHighScores(highscores);
+    }
+
+    function getLightsOutBoard() {
+        return (
+            <>
+                <div className={styles.board}>
+                    <div
+                        className={
+                            styles.win + " " + (!hasWon ? styles.hide : "")
+                        }
+                    >
+                        <span>You won!</span>
+                    </div>
+                    <ul className={styles.row}>
+                        {lights.map((value, i) => {
+                            return (
+                                <li
+                                    key={i}
+                                    className={
+                                        (value === true
+                                            ? styles.on
+                                            : styles.off) +
+                                        " " +
+                                        styles.square
+                                    }
+                                    onClick={() => toggleLights(i)}
+                                ></li>
+                            );
+                        })}
+                    </ul>
+                </div>
+                <button className={styles.button} onClick={() => resetLevel(0)}>
+                    Reset Level
+                </button>
+                <span>Number of Moves: {moveCount}</span>
+            </>
+        );
+    }
+
     return (
         <>
-            <div className={styles.board}>
-                <div
-                    className={styles.win + " " + (!hasWon ? styles.hide : "")}
-                >
-                    <span>You won!</span>
-                </div>
-                <ul className={styles.row}>
-                    {lights.map((value, i) => {
+            <div className={styles.main}>
+                <h1>Lights Out</h1>
+                <h4>
+                    The goal is to turn all the lights below off in. Fewer total
+                    moves gets a higher score.
+                </h4>
+                <ul>
+                    {highscores.map((score: any) => {
                         return (
-                            <li
-                                key={i}
-                                className={
-                                    (value === true ? styles.on : styles.off) +
-                                    " " +
-                                    styles.square
-                                }
-                                onClick={() => toggleLights(i)}
-                            ></li>
+                            <li key={score.id}>
+                                {score.username} : {score.moveCount}
+                            </li>
                         );
                     })}
                 </ul>
+                {getLightsOutBoard()}
             </div>
-            <button className={styles.button} onClick={() => resetLevel(0)}>
-                Reset Level
-            </button>
-            <span>Number of Moves: {moveCount}</span>
         </>
     );
 }
