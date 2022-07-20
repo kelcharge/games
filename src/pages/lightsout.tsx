@@ -12,10 +12,11 @@ export default function LightsOut() {
     const [lights, setLights] = useState(Array(size).fill(false));
     const [isLoaded, setIsLoaded] = useState(false);
     const [moveCount, setMoveCount] = useState(0);
+    const [level, setLevel] = useState(0);
 
     useEffect(() => {
         getHighScores();
-        resetLevel(0);
+        resetLevel(level);
         setIsLoaded(true);
     }, []);
 
@@ -32,6 +33,7 @@ export default function LightsOut() {
                     body: JSON.stringify({
                         username: "KEL",
                         moveCount: moveCount,
+                        level: level,
                     }),
                 };
                 fetch("/api/add-highscore", requestOptions)
@@ -68,19 +70,19 @@ export default function LightsOut() {
         setMoveCount(moveCount + 1);
     }
 
-    function resetLevel(level: number) {
+    function resetLevel(lvl: number) {
         setHasWon(false);
         setMoveCount(0);
         setLights(
             lights.map((value, index) => {
-                return LEVELS[level].includes(index) ? !value : value;
+                return LEVELS[lvl].includes(index) ? !value : value;
             })
         );
     }
 
     async function getHighScores() {
         // Fetch the highscores from our backend
-        const highscores = await fetch("/api/get-highscore")
+        const highscores = await fetch("/api/get-highscore/" + level)
             .then((response) => response.json())
             .then((data) => data);
 
@@ -116,9 +118,13 @@ export default function LightsOut() {
                         })}
                     </ul>
                 </div>
-                <button className={styles.button} onClick={() => resetLevel(0)}>
+                <button
+                    className={styles.button}
+                    onClick={() => resetLevel(level)}
+                >
                     Reset Level
                 </button>
+                <br />
                 <span>Number of Moves: {moveCount}</span>
             </>
         );
@@ -132,6 +138,9 @@ export default function LightsOut() {
                     The goal is to turn all the lights below off in. Fewer total
                     moves gets a higher score.
                 </h4>
+                {getLightsOutBoard()}
+                <br />
+                <h2>High Scores for level {level + 1}</h2>
                 <ul>
                     {highscores.map((score: any) => {
                         return (
@@ -141,7 +150,6 @@ export default function LightsOut() {
                         );
                     })}
                 </ul>
-                {getLightsOutBoard()}
             </div>
         </>
     );

@@ -121,6 +121,10 @@
 .board {
     display: flex;
     position: relative;
+    background-color: gray;
+    padding: 20px;
+    border-radius: 20px;
+    border: 5px groove black;
 }
 
 .row {
@@ -132,17 +136,24 @@
 }
 
 .on {
-    background-color: red;
+    box-shadow: 0 0 10px 1px red inset;
 }
 
 .off {
-    background-color: plum;
+  box-shadow: none;
+}
+
+.off:hover {
+  opacity: 0.9;
 }
 
 .square {
     width: 50px;
     height: 50px;
-    border: 1px solid gainsboro;
+    border: 1px groove gainsboro;
+    border-radius: 10px;
+    background: rgb(90,76,117);
+    background: radial-gradient(circle, rgba(90,76,117,1) 0%, rgba(2,0,36,1) 100%, rgba(0,212,255,1) 100%);
 }
 
 .square:hover {
@@ -157,6 +168,7 @@
     background-color: gainsboro;
     border: 1px groove gainsboro;
     border-radius: 10px;
+    margin-top: 20px;
 }
 
 .button:hover {
@@ -171,11 +183,9 @@
     position: absolute;
     font-size: 38px;
     font-weight: bold;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 40%;
+    left: 22%;
+    color: antiquewhite;
 }
 
 .hide {

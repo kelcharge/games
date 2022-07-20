@@ -11,8 +11,9 @@ datasource db {
 }
 
 model HighScore {
-  id Int @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  username String @default("KEL")
-  moveCount Int @default(0)
+  username  String   @default("KEL")
+  moveCount Int      @default(0)
+  level     String   @default("0")
 }
