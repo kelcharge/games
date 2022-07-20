@@ -7,7 +7,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     // Take option to limit the amount of records returned
     const data = await prisma.highScore.findMany({
+        orderBy: [
+            {
+                moveCount: 'asc'
+            }
+        ],
         where: level,
+        take: 10,
     });
 
     

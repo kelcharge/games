@@ -2,7 +2,18 @@ import { useEffect, useState } from "react";
 
 import styles from "../styles/LightsOut.module.css";
 
-const LEVELS = [[10, 12, 14]];
+const LEVELS = [
+    [7, 11, 12, 13, 17],
+    [10, 12, 14],
+    [7, 8, 11, 12, 13, 15, 17, 21],
+    [2, 6, 7, 8, 10, 11, 13, 14, 16, 17, 18, 22],
+    [0, 1, 2, 5, 6, 10, 11, 20],
+    [5, 7, 9, 12, 15, 16, 18, 19, 22],
+    [0, 2, 4, 5, 7, 9, 10, 12, 14, 15, 17, 19, 21, 22, 23, 24],
+    [3, 4, 6, 8, 10, 14, 15, 17, 19],
+    [0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24],
+    [2, 6, 8, 10, 12, 14, 16, 18, 22],
+];
 
 export default function LightsOut() {
     // Setup
@@ -15,33 +26,43 @@ export default function LightsOut() {
     const [level, setLevel] = useState(0);
 
     useEffect(() => {
+        if (isLoaded) {
+            checkWin();
+        }
+    }, [lights]);
+
+    useEffect(() => {
         getHighScores();
-        resetLevel(level);
+        resetLevel();
+    }, [level]);
+
+    useEffect(() => {
         setIsLoaded(true);
     }, []);
 
-    useEffect(() => {
-        if (isLoaded) {
-            const anyOn = lights.filter((isOn) => isOn === true);
+    function checkWin() {
+        const anyOn = lights.filter((isOn) => isOn === true);
 
-            if (anyOn.length === 0) {
-                setHasWon(true);
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        username: "KEL",
-                        moveCount: moveCount,
-                        level: level,
-                    }),
-                };
-                fetch("/api/add-highscore", requestOptions)
-                    .then((response) => response.json())
-                    .then((data) => console.log(data));
-            }
+        if (anyOn.length === 0) {
+            setHasWon(true);
         }
-    }, [lights]);
+    }
+
+    function saveHighScore() {
+        // Break this out into own call that takes user data
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: "KEL",
+                moveCount: moveCount,
+                level: level,
+            }),
+        };
+        fetch("/api/add-highscore", requestOptions)
+            .then((response) => response.json())
+            .then((data) => console.log(data));
+    }
 
     function toggleLight(i: number) {
         return lights.map((value, index) => {
@@ -66,18 +87,26 @@ export default function LightsOut() {
     }
 
     function toggleLights(i: number) {
-        setLights(toggleLight(i));
-        setMoveCount(moveCount + 1);
+        if (!hasWon) {
+            setLights(toggleLight(i));
+            setMoveCount(moveCount + 1);
+        }
     }
 
-    function resetLevel(lvl: number) {
+    function resetLevel() {
         setHasWon(false);
         setMoveCount(0);
+        setLights(new Array(size).fill(false));
         setLights(
             lights.map((value, index) => {
-                return LEVELS[lvl].includes(index) ? !value : value;
+                return LEVELS[level].includes(index) ? true : false;
             })
         );
+    }
+
+    function levelChange(event: React.ChangeEvent<HTMLSelectElement>) {
+        const level = parseInt(event.currentTarget.value);
+        setLevel(level);
     }
 
     async function getHighScores() {
@@ -118,10 +147,7 @@ export default function LightsOut() {
                         })}
                     </ul>
                 </div>
-                <button
-                    className={styles.button}
-                    onClick={() => resetLevel(level)}
-                >
+                <button className={styles.button} onClick={() => resetLevel()}>
                     Reset Level
                 </button>
                 <br />
@@ -138,9 +164,19 @@ export default function LightsOut() {
                     The goal is to turn all the lights below off in. Fewer total
                     moves gets a higher score.
                 </h4>
+                <span>Level Select: </span>
+                <select className={styles.select} onChange={levelChange}>
+                    {LEVELS.map((level: any, index: number) => {
+                        return (
+                            <option key={index} value={index}>
+                                {index + 1}
+                            </option>
+                        );
+                    })}
+                </select>
                 {getLightsOutBoard()}
                 <br />
-                <h2>High Scores for level {level + 1}</h2>
+                <h2>High Scores {"(" + (level + 1) + ")"}</h2>
                 <ul>
                     {highscores.map((score: any) => {
                         return (
