@@ -213,7 +213,7 @@ export default function LightsOut() {
             <div className={styles.main}>
                 <h1>Lights Out</h1>
                 <h4>
-                    The goal is to turn all the lights below off in. Fewer total
+                    The goal is to turn all the lights below off. Fewer total
                     moves gets a higher score.
                 </h4>
                 <span>Level Select: </span>
