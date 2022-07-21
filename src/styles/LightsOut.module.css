@@ -198,3 +198,49 @@
   text-align: center;
   font-weight: bold;
 }
+
+.slide {
+  margin-top: 300px;
+  background-color: rgb(24, 32, 39);
+  padding-bottom: 10px;
+}
+
+.form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.5s;
+}
+
+.input {
+  background-color: rgb(32, 42, 51);
+  color: white;
+  height: 40px;
+  max-width: 100px;
+  font-size: 36px;
+  text-align: center;
+  text-transform: uppercase;
+  border: none;
+  box-shadow: inset 0 -5px whitesmoke;
+}
+
+.input:focus {
+  outline: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .form {
+    top: 40%;
+  }
+
+  .slide {
+    margin-left: -300px;
+    background-color: inherit;
+    padding-bottom: 0;
+    margin-top: 0;
+  }
+}

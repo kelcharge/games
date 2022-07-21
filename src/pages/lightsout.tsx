@@ -19,11 +19,13 @@ export default function LightsOut() {
     // Setup
     const [highscores, setHighScores] = useState([]);
     const [hasWon, setHasWon] = useState(false);
+    const [isLeaderboard, setIsLeaderboard] = useState(false);
     const [size, setSize] = useState(25);
     const [lights, setLights] = useState(Array(size).fill(false));
     const [isLoaded, setIsLoaded] = useState(false);
     const [moveCount, setMoveCount] = useState(0);
     const [level, setLevel] = useState(0);
+    const [name, setName] = useState("");
 
     useEffect(() => {
         if (isLoaded) {
@@ -45,21 +47,29 @@ export default function LightsOut() {
 
         if (anyOn.length === 0) {
             setHasWon(true);
+
+            highscores.map((score: any, index: number) => {
+                // If you've beaten a score on the current board or the leaderboard has less than 10
+                if (highscores.length < 10) {
+                    setIsLeaderboard(true);
+                } else if (score.moveCount > moveCount) {
+                    setIsLeaderboard(true);
+                }
+            });
         }
     }
 
-    function saveHighScore() {
-        // Break this out into own call that takes user data
+    async function saveHighScore() {
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                username: "KEL",
+                username: name.toUpperCase(),
                 moveCount: moveCount,
-                level: level,
+                level: level.toString(),
             }),
         };
-        fetch("/api/add-highscore", requestOptions)
+        await fetch("/api/add-highscore", requestOptions)
             .then((response) => response.json())
             .then((data) => console.log(data));
     }
@@ -118,6 +128,18 @@ export default function LightsOut() {
         setHighScores(highscores);
     }
 
+    function handleNameChange(event: React.ChangeEvent<HTMLInputElement>) {
+        setName(event.currentTarget.value);
+    }
+
+    function submitScore() {
+        if (hasWon && isLeaderboard) {
+            saveHighScore();
+            getHighScores();
+            resetLevel();
+        }
+    }
+
     function getLightsOutBoard() {
         return (
             <>
@@ -159,6 +181,24 @@ export default function LightsOut() {
     return (
         <>
             <div className={styles.main}>
+                <div
+                    className={
+                        styles.form +
+                        (hasWon && isLeaderboard ? " " + styles.slide : "")
+                    }
+                >
+                    <h3>You made the leaderboard!</h3>
+                    <h5>Enter a name to submit your score.</h5>
+                    <input
+                        className={styles.input}
+                        maxLength={3}
+                        value={name}
+                        onChange={handleNameChange}
+                    />
+                    <button className={styles.button} onClick={submitScore}>
+                        Submit
+                    </button>
+                </div>
                 <h1>Lights Out</h1>
                 <h4>
                     The goal is to turn all the lights below off in. Fewer total

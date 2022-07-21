@@ -10,6 +10,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         orderBy: [
             {
                 moveCount: 'asc'
+            },
+            {
+                createdAt: 'asc'
             }
         ],
         where: level,
