@@ -227,7 +227,7 @@
   color: white;
   height: 40px;
   max-width: 100px;
-  font-size: 36px;
+  font-size: 18px;
   text-align: center;
   text-transform: uppercase;
   border: none;
@@ -265,6 +265,10 @@
   .form {
     top: 50%;
     background-color: rgb(32, 42, 51);
+  }
+
+  .input {
+    font-size: 36px;
   }
 
   .slide {
