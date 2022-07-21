@@ -48,14 +48,18 @@ export default function LightsOut() {
         if (anyOn.length === 0) {
             setHasWon(true);
 
-            highscores.map((score: any, index: number) => {
-                // If you've beaten a score on the current board or the leaderboard has less than 10
-                if (highscores.length < 10) {
-                    setIsLeaderboard(true);
-                } else if (score.moveCount > moveCount) {
-                    setIsLeaderboard(true);
-                }
-            });
+            if (highscores.length > 0) {
+                highscores.map((score: any, index: number) => {
+                    // If you've beaten a score on the current board or the leaderboard has less than 10
+                    if (highscores.length < 10) {
+                        setIsLeaderboard(true);
+                    } else if (score.moveCount > moveCount) {
+                        setIsLeaderboard(true);
+                    }
+                });
+            } else {
+                setIsLeaderboard(true);
+            }
         }
     }
 
@@ -125,6 +129,8 @@ export default function LightsOut() {
             .then((response) => response.json())
             .then((data) => data);
 
+        console.log(highscores);
+
         setHighScores(highscores);
     }
 
@@ -140,10 +146,34 @@ export default function LightsOut() {
         }
     }
 
+    function getSubmitHighScore() {
+        return (
+            <div
+                className={
+                    styles.form +
+                    (hasWon && isLeaderboard ? " " + styles.slide : "")
+                }
+            >
+                <h3>You made the leaderboard!</h3>
+                <h5>Enter a name to submit your score.</h5>
+                <input
+                    className={styles.input}
+                    maxLength={3}
+                    value={name}
+                    onChange={handleNameChange}
+                />
+                <button className={styles.button} onClick={submitScore}>
+                    Submit
+                </button>
+            </div>
+        );
+    }
+
     function getLightsOutBoard() {
         return (
             <>
                 <div className={styles.board}>
+                    {getSubmitHighScore()}
                     <div
                         className={
                             styles.win + " " + (!hasWon ? styles.hide : "")
@@ -181,24 +211,6 @@ export default function LightsOut() {
     return (
         <>
             <div className={styles.main}>
-                <div
-                    className={
-                        styles.form +
-                        (hasWon && isLeaderboard ? " " + styles.slide : "")
-                    }
-                >
-                    <h3>You made the leaderboard!</h3>
-                    <h5>Enter a name to submit your score.</h5>
-                    <input
-                        className={styles.input}
-                        maxLength={3}
-                        value={name}
-                        onChange={handleNameChange}
-                    />
-                    <button className={styles.button} onClick={submitScore}>
-                        Submit
-                    </button>
-                </div>
                 <h1>Lights Out</h1>
                 <h4>
                     The goal is to turn all the lights below off in. Fewer total

@@ -20,6 +20,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     
-    res.send(JSON.stringify(data));
+    if (data) {
+        res.send(JSON.stringify(data));
+        return;
+    }
+
+    res.send({});
 
 }
