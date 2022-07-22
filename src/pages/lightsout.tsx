@@ -73,9 +73,9 @@ export default function LightsOut() {
                 level: level.toString(),
             }),
         };
-        await fetch("/api/add-highscore", requestOptions)
-            .then((response) => response.json())
-            .then((data) => console.log(data));
+        await fetch("/api/add-highscore", requestOptions).then((response) =>
+            response.json()
+        );
     }
 
     function toggleLight(i: number) {
@@ -128,8 +128,6 @@ export default function LightsOut() {
         const highscores = await fetch("/api/get-highscore/" + level)
             .then((response) => response.json())
             .then((data) => data);
-
-        console.log(highscores);
 
         setHighScores(highscores);
     }
